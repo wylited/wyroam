@@ -1,4 +1,4 @@
-use async_graphql::{Object, Schema, EmptyMutation, EmptySubscription, SimpleObject};
+use async_graphql::{Object, Schema, EmptyMutation, EmptySubscription, SimpleObject, InputObject};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::Extension;
 use std::sync::Arc;
@@ -34,8 +34,34 @@ pub struct QueryRoot {
     pub db: Arc<Db>,
 }
 
+#[derive(InputObject)]
+struct PaginationInput {
+    offset: Option<usize>,
+    limit: Option<usize>,
+}
+
 #[Object]
 impl QueryRoot {
+    async fn all_node_ids(&self) -> Vec<String> {
+        self.db.id_map.keys().cloned().collect()
+    }
+
+    async fn all_nodes(&self) -> Vec<NodeQL> {
+        self.db.id_map.values()
+            .cloned()
+            .map(NodeQL::from)
+            .collect()
+    }
+
+    async fn paginated_nodes(&self, pagination: PaginationInput) -> Vec<NodeQL> {
+        self.db.id_map.values()
+            .skip(pagination.offset.unwrap_or(0))
+            .take(pagination.limit.unwrap_or(10))
+            .cloned()
+            .map(NodeQL::from)
+            .collect()
+    }
+
     async fn node(&self, id: String) -> Option<NodeQL> {
         self.db.id_map.get(&id).cloned().map(NodeQL::from)
     }

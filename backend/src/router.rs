@@ -1,14 +1,12 @@
 use std::path::PathBuf;
-use tower_http::{
-    services::{ServeDir},
-};
+use tower_http::services::ServeDir;
 use axum::{
-    routing::{get}, Router, Extension
+    routing::{get, post}, Router, Extension
 };
 use std::sync::Arc;
 
 
-use crate::{db::{Db}, graphql::{self, QueryRoot}};
+use crate::{db::Db, graphql::{self, QueryRoot}};
 use async_graphql::{EmptySubscription, EmptyMutation, Schema};
 
 
@@ -17,7 +15,7 @@ pub fn router(input: PathBuf, db: Db) -> Router {
         .finish();
     Router::new()
         .route("/", get(root))
-        .route("/db", get(graphql::graphql_handler))
+        .route("/graphql", post(graphql::graphql_handler))
         .nest_service(
             "/notes",
             ServeDir::new(input),
