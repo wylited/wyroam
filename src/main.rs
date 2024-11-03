@@ -21,7 +21,7 @@ async fn main() -> Result<()> {
     let listener = tokio::net::TcpListener::bind("localhost:3000").await
         .map_err(|e| anyhow::anyhow!("failed to bind listener: {}", e))?;
 
-    axum::serve(listener, router(cli.input.clone(), db)).await
+    axum::serve(listener, router(cli.input.clone()).with_state(db)).await
         .map_err(|e| anyhow::anyhow!("server error: {}", e))?;
 
     Ok(())

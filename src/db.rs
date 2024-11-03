@@ -4,10 +4,12 @@ use std::{
 };
 
 use anyhow::Result;
+use axum::{extract::State, Json};
 use walkdir::WalkDir;
 
 use crate::{node::Node, parser::parse_file};
 
+#[derive(Clone)]
 pub struct Db {
     pub id_map: HashMap<String, Node>,
     pub aliases: HashMap<String, HashSet<String>>, // List of all aliases to node ids
@@ -54,4 +56,25 @@ impl Db {
             tags,
         })
     }
+}
+
+pub async fn ids(
+    State(db): State<Db>
+) -> Json<Vec<String>> {
+    let ids: Vec<String> = db.id_map.keys().cloned().collect();
+    Json(ids)
+}
+
+pub async fn aliases(
+    State(db): State<Db>
+) -> Json<Vec<String>> {
+    let aliases: Vec<String> = db.aliases.keys().cloned().collect();
+    Json(aliases)
+}
+
+pub async fn tags(
+    State(db): State<Db>
+) -> Json<Vec<String>> {
+    let tags: Vec<String> = db.tags.keys().cloned().collect();
+    Json(tags)
 }
