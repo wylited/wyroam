@@ -1,8 +1,11 @@
-use orgize::Org;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
-pub struct OrgNode {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Node {
+    pub id: String,
     pub filename: String,
     pub title: String,
-    pub org: Org,
+    pub aliases: Vec<String>,
+    pub tags: Vec<String>,
+    pub html: String,
 }

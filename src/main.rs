@@ -1,3 +1,4 @@
+mod app;
 mod cli;
 mod node;
 mod parser;
@@ -8,14 +9,14 @@ use cli::{Cli, Commands};
 use std::{fs::File, io::Write};
 use walkdir::WalkDir;
 
-use crate::node::OrgNode;
+use crate::node::Node;
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
         Commands::Parse { input, output } => {
-            let mut nodes: Vec<OrgNode> = Vec::new();
+            let mut nodes: Vec<Node> = Vec::new();
 
             // Walk through the directory and parse all .org files
             for entry in WalkDir::new(input) {
@@ -28,19 +29,11 @@ fn main() -> Result<()> {
                 }
             }
 
-            // Save to html file
-            for node in &nodes {
-                let html = node.org.to_html();
-                // Create the full path for the file
-                let full_path = format!("{}/{}.html", output.display(), node.filename);
+            let output_file = format!("{}/output.json", output.display());
+            let mut file = File::create(output_file)?;
+            let json_data = serde_json::to_string_pretty(&nodes)?;
+            file.write_all(json_data.as_bytes())?;
 
-                // Create the directory if it doesn't exist
-                std::fs::create_dir_all(output.clone())?;
-
-                // Create a new file and write the HTML content to it
-                let mut file = File::create(&full_path)?;
-                file.write_all(html.as_bytes())?;
-            }
             println!("Parsed {} org files", nodes.len());
         }
 
