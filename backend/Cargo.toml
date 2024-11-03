@@ -1,0 +1,20 @@
+[package]
+name = "wyroam"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.4", features = ["derive"] }
+regex = "1.10"
+walkdir = "2.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+orgize = "0.10.0-alpha.1"
+tokio = {version = "1.41.0", features = ["full"] }
+axum = "0.7.7"
+tracing-subscriber = "0.3.18"
+tower = { version = "0.5.1", features = ["util"] }
+tower-http = { version = "0.6.1", features = ["fs", "trace"] }
+async-graphql = "7.0.11"
+async-graphql-axum = "7.0.11"
