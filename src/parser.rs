@@ -6,7 +6,7 @@ use orgize::{
 };
 use std::{collections::HashSet, fs, path::PathBuf};
 
-pub fn parse_org_file(path: &PathBuf) -> Result<Node> {
+pub fn parse_file(path: &PathBuf) -> Result<Node> {
     let content = fs::read_to_string(path)?;
     let filename = path
         .file_name()

@@ -1,46 +1,28 @@
-mod app;
+mod db;
 mod cli;
 mod node;
 mod parser;
+mod router;
 
 use anyhow::Result;
+use db::Db;
 use clap::Parser;
-use cli::{Cli, Commands};
-use std::{fs::File, io::Write};
-use walkdir::WalkDir;
+use cli::Cli;
+use router::router;
 
-use crate::node::Node;
+#[tokio::main]
+async fn main() -> Result<()> {
+    tracing_subscriber::fmt::init();
 
-fn main() -> Result<()> {
     let cli = Cli::parse();
 
-    match cli.command {
-        Commands::Parse { input, output } => {
-            let mut nodes: Vec<Node> = Vec::new();
+    let db = Db::new(cli.input.clone()).map_err(|e| anyhow::anyhow!("db initialization failed: {}", e))?;
 
-            // Walk through the directory and parse all .org files
-            for entry in WalkDir::new(input) {
-                let entry = entry?;
-                if entry.path().extension().map_or(false, |ext| ext == "org") {
-                    match parser::parse_org_file(&entry.path().to_path_buf()) {
-                        Ok(doc) => nodes.push(doc),
-                        Err(e) => eprintln!("Error parsing {}: {}", entry.path().display(), e),
-                    }
-                }
-            }
+    let listener = tokio::net::TcpListener::bind("localhost:3000").await
+        .map_err(|e| anyhow::anyhow!("failed to bind listener: {}", e))?;
 
-            let output_file = format!("{}/output.json", output.display());
-            let mut file = File::create(output_file)?;
-            let json_data = serde_json::to_string_pretty(&nodes)?;
-            file.write_all(json_data.as_bytes())?;
-
-            println!("Parsed {} org files", nodes.len());
-        }
-
-        Commands::Web { file: _ } => {
-            todo!();
-        }
-    }
+    axum::serve(listener, router(cli.input.clone(), db)).await
+        .map_err(|e| anyhow::anyhow!("server error: {}", e))?;
 
     Ok(())
 }
