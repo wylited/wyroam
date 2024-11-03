@@ -1,5 +1,5 @@
 // components/Search.tsx
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Command,
   CommandDialog,
@@ -26,14 +26,20 @@ export default function Search({ nodes, onSelectNode }: SearchProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchResults, setSearchResults] = useState<Node[]>([]);
 
-  // Function to strip HTML tags and clean the text
+  // Debug log to check nodes prop
+  useEffect(() => {
+    console.log('Search component nodes:', nodes);
+  }, [nodes]);
+
   const stripHtml = (html: string) => {
     const cleanHtml = DOMPurify.sanitize(html, { ALLOWED_TAGS: [] });
     return cleanHtml.replace(/\s+/g, ' ').trim();
   };
 
-  // Search function
   const handleSearch = useCallback((searchTerm: string) => {
+    console.log('Search term:', searchTerm); // Debug log
+    console.log('Current nodes:', nodes); // Debug log
+
     if (!searchTerm) {
       setSearchResults([]);
       return;
@@ -46,17 +52,13 @@ export default function Search({ nodes, onSelectNode }: SearchProps) {
         .toLowerCase()
         .includes(normalizedSearch);
 
+      console.log(`Node ${node.id}:`, { titleMatch, contentMatch }); // Debug log
       return titleMatch || contentMatch;
     });
 
+    console.log('Search results:', results); // Debug log
     setSearchResults(results);
   }, [nodes]);
-
-  // Function to handle node selection
-  const handleSelect = (node: Node) => {
-    onSelectNode(node);
-    setIsOpen(false);
-  };
 
   return (
     <>
@@ -64,7 +66,7 @@ export default function Search({ nodes, onSelectNode }: SearchProps) {
         onClick={() => setIsOpen(true)}
         className="w-full max-w-sm px-4 py-2 text-left text-sm rounded-lg border border-input bg-background"
       >
-        Search nodes...
+        Search nodes... ({nodes.length} nodes available)
       </button>
 
       <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
@@ -74,24 +76,27 @@ export default function Search({ nodes, onSelectNode }: SearchProps) {
             onValueChange={handleSearch}
           />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup heading="Results">
-              {searchResults.map((node) => {
-                const content = stripHtml(node.html);
-                return (
-                  <CommandItem
-                    key={node.id}
-                    onSelect={() => handleSelect(node)}
-                    className="flex flex-col items-start gap-1"
-                  >
-                    <div className="font-medium">{node.title}</div>
-                    <div className="text-sm text-muted-foreground line-clamp-1">
-                      {content}
-                    </div>
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
+            {searchResults.length === 0 ? (
+              <CommandEmpty>No results found.</CommandEmpty>
+            ) : (
+              <CommandGroup heading="Results">
+                {searchResults.map((node) => {
+                  const content = stripHtml(node.html);
+                  return (
+                    <CommandItem
+                      key={node.id}
+                      onSelect={() => handleSelect(node)}
+                      className="flex flex-col items-start gap-1"
+                    >
+                      <div className="font-medium">{node.title}</div>
+                      <div className="text-sm text-muted-foreground line-clamp-1">
+                        {content}
+                      </div>
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </CommandDialog>

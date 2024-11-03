@@ -7,9 +7,9 @@
   "chunks": [
     "static/chunks/124e8_next_dist_11c66d._.js",
     "static/chunks/7e64a_react-dom_f9af3e._.js",
-    "static/chunks/86733_framer-motion_dist_es_064dbe._.js",
-    "static/chunks/node_modules__pnpm_9baf59._.js",
-    "static/chunks/[root of the server]__ff8997._.js"
+    "static/chunks/c54f6_@radix-ui_react-icons_dist_react-icons_esm_a4eef1.js",
+    "static/chunks/node_modules__pnpm_5f73d7._.js",
+    "static/chunks/[root of the server]__9ff016._.js"
   ],
   "source": "entry"
 });

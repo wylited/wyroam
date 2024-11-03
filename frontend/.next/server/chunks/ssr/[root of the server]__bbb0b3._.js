@@ -496,11 +496,13 @@ __turbopack_esm__({
 var __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__ = __turbopack_import__("[externals]/ [external] (react/jsx-dev-runtime, cjs)");
 var __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$react$2c$__cjs$29$__ = __turbopack_import__("[externals]/ [external] (react, cjs)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Zettelkasten$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/src/components/Zettelkasten.tsx [ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Search$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/src/components/Search.tsx [ssr] (ecmascript)");
 var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
     __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Zettelkasten$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__
 ]);
 ([__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Zettelkasten$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__);
 'use client';
+;
 ;
 ;
 ;
@@ -535,13 +537,26 @@ function Home() {
         };
         fetchNodes();
     }, []);
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Zettelkasten$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["Zettelkasten"], {
-        nodes: nodes
+    const handleNodeSelect = (node)=>{
+        // Handle the selected node (e.g., navigate to it or display it)
+        console.log('Selected node:', node);
+    };
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+        className: "p-4",
+        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Search$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
+            nodes: nodes,
+            onSelectNode: handleNodeSelect
+        }, void 0, false, {
+            fileName: "[project]/src/pages/index.tsx",
+            lineNumber: 53,
+            columnNumber: 7
+        }, this)
     }, void 0, false, {
         fileName: "[project]/src/pages/index.tsx",
-        lineNumber: 45,
-        columnNumber: 10
+        lineNumber: 52,
+        columnNumber: 5
     }, this);
+    "TURBOPACK unreachable";
 }
 __turbopack_async_result__();
 } catch(e) { __turbopack_async_result__(e); } }, false);}),
