@@ -1,0 +1,105 @@
+/* [project]/src/pages/geistsans_6cecb484.module.css [client] (css) */
+@font-face {
+  font-family: geistSans;
+  src: url("../media/GeistVF-s.p.7fe29570.woff") format("woff");
+  font-display: swap;
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: geistSans Fallback;
+  src: local(Arial);
+  ascent-override: 85.83%;
+  descent-override: 20.52%;
+  line-gap-override: 9.33%;
+  size-adjust: 107.19%;
+}
+
+.geistsans_6cecb484-module__KXIcRa__className {
+  font-family: geistSans, geistSans Fallback;
+}
+
+.geistsans_6cecb484-module__KXIcRa__variable {
+  --font-geist-sans: "geistSans", "geistSans Fallback";
+}
+
+
+/* [project]/src/pages/geistsans_6cecb484.module.css [client] (css) */
+@font-face {
+  font-family: geistSans;
+  src: url("../media/GeistVF-s.p.7fe29570.woff") format("woff");
+  font-display: swap;
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: geistSans Fallback;
+  src: local(Arial);
+  ascent-override: 85.83%;
+  descent-override: 20.52%;
+  line-gap-override: 9.33%;
+  size-adjust: 107.19%;
+}
+
+.geistsans_6cecb484-module__KXIcRa__className {
+  font-family: geistSans, geistSans Fallback;
+}
+
+.geistsans_6cecb484-module__KXIcRa__variable {
+  --font-geist-sans: "geistSans", "geistSans Fallback";
+}
+
+
+/* [project]/src/pages/geistmono_faa58a21.module.css [client] (css) */
+@font-face {
+  font-family: geistMono;
+  src: url("../media/GeistMonoVF-s.p.a9159d35.woff") format("woff");
+  font-display: swap;
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: geistMono Fallback;
+  src: local(Arial);
+  ascent-override: 69.97%;
+  descent-override: 16.73%;
+  line-gap-override: 7.61%;
+  size-adjust: 131.49%;
+}
+
+.geistmono_faa58a21-module__5VrcSW__className {
+  font-family: geistMono, geistMono Fallback;
+}
+
+.geistmono_faa58a21-module__5VrcSW__variable {
+  --font-geist-mono: "geistMono", "geistMono Fallback";
+}
+
+
+/* [project]/src/pages/geistmono_faa58a21.module.css [client] (css) */
+@font-face {
+  font-family: geistMono;
+  src: url("../media/GeistMonoVF-s.p.a9159d35.woff") format("woff");
+  font-display: swap;
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: geistMono Fallback;
+  src: local(Arial);
+  ascent-override: 69.97%;
+  descent-override: 16.73%;
+  line-gap-override: 7.61%;
+  size-adjust: 131.49%;
+}
+
+.geistmono_faa58a21-module__5VrcSW__className {
+  font-family: geistMono, geistMono Fallback;
+}
+
+.geistmono_faa58a21-module__5VrcSW__variable {
+  --font-geist-mono: "geistMono", "geistMono Fallback";
+}
+
+
+/*# sourceMappingURL=src_pages_2769a2._.css.map*/
