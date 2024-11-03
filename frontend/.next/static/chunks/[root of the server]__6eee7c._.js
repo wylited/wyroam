@@ -559,9 +559,11 @@ __turbopack_esm__({
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$react$40$19$2e$0$2e$0$2d$rc$2d$02c0e824$2d$20241028$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/.pnpm/react@19.0.0-rc-02c0e824-20241028/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$react$40$19$2e$0$2e$0$2d$rc$2d$02c0e824$2d$20241028$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/.pnpm/react@19.0.0-rc-02c0e824-20241028/node_modules/react/index.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Zettelkasten$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/src/components/Zettelkasten.tsx [client] (ecmascript)");
 ;
 var _s = __turbopack_refresh__.signature();
 'use client';
+;
 ;
 function Home() {
     _s();
@@ -572,6 +574,7 @@ function Home() {
         allNodes {
           id
           title
+          html
         }
       }`;
             try {
@@ -586,7 +589,7 @@ function Home() {
                 });
                 const data = await response.json();
                 if (data.data?.allNodes) {
-                    setNodes(data.data.allNodes.slice(0, 10)); // Get first 10 nodes
+                    setNodes(data.data.allNodes.slice(0, 10));
                 }
             } catch (error) {
                 console.error('Error fetching nodes:', error);
@@ -594,43 +597,12 @@ function Home() {
         };
         fetchNodes();
     }, []);
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$react$40$19$2e$0$2e$0$2d$rc$2d$02c0e824$2d$20241028$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "p-4",
-        children: [
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$react$40$19$2e$0$2e$0$2d$rc$2d$02c0e824$2d$20241028$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                className: "text-2xl font-bold mb-4",
-                children: "Index"
-            }, void 0, false, {
-                fileName: "[project]/src/pages/index.tsx",
-                lineNumber: 44,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$react$40$19$2e$0$2e$0$2d$rc$2d$02c0e824$2d$20241028$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "flex flex-col gap-2",
-                children: nodes.map((node)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$react$40$19$2e$0$2e$0$2d$rc$2d$02c0e824$2d$20241028$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
-                        href: `/notes/${node.id}`,
-                        className: "text-blue-600 hover:text-blue-800 hover:underline",
-                        children: [
-                            node.title || 'Untitled',
-                            " (",
-                            node.id,
-                            ")"
-                        ]
-                    }, node.id, true, {
-                        fileName: "[project]/src/pages/index.tsx",
-                        lineNumber: 47,
-                        columnNumber: 11
-                    }, this))
-            }, void 0, false, {
-                fileName: "[project]/src/pages/index.tsx",
-                lineNumber: 45,
-                columnNumber: 7
-            }, this)
-        ]
-    }, void 0, true, {
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$react$40$19$2e$0$2e$0$2d$rc$2d$02c0e824$2d$20241028$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Zettelkasten$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["Zettelkasten"], {
+        nodes: nodes
+    }, void 0, false, {
         fileName: "[project]/src/pages/index.tsx",
-        lineNumber: 43,
-        columnNumber: 5
+        lineNumber: 45,
+        columnNumber: 10
     }, this);
 }
 _s(Home, "PbTFKmE3ANQd50N7lqnMXthrMF4=");

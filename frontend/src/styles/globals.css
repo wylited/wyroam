@@ -16,6 +16,12 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

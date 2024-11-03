@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 
-interface ZettelCardProps {
+interface NodeProps {
   node: {
     id: string;
     title: string;
@@ -14,16 +14,16 @@ interface ZettelCardProps {
   onClick: () => void;
 }
 
-export function ZettelCard({
+export function Node({
   node,
   index,
   totalCards,
   isFolded,
   onClose,
   onClick
-}: ZettelCardProps) {
+}: NodeProps) {
   const cardWidth = isFolded ? '40px' : '600px';
-  const xPosition = index * (isFolded ? -40 : -620);
+  const xPosition = (isFolded ? index*15 : 620);
 
   return (
     <motion.div
