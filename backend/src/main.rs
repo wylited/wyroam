@@ -19,7 +19,7 @@ async fn main() -> Result<()> {
 
     let db = Db::new(cli.input.clone()).map_err(|e| anyhow::anyhow!("db initialization failed: {}", e))?;
 
-    let listener = tokio::net::TcpListener::bind("localhost:3000").await
+    let listener = tokio::net::TcpListener::bind("localhost:8000").await
         .map_err(|e| anyhow::anyhow!("failed to bind listener: {}", e))?;
 
     axum::serve(listener, router(cli.input.clone(), db)).await

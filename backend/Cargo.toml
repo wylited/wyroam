@@ -15,6 +15,7 @@ tokio = {version = "1.41.0", features = ["full"] }
 axum = "0.7.7"
 tracing-subscriber = "0.3.18"
 tower = { version = "0.5.1", features = ["util"] }
-tower-http = { version = "0.6.1", features = ["fs", "trace"] }
+tower-http = { version = "0.6.1", features = ["fs", "trace", "cors"] }
 async-graphql = "7.0.11"
 async-graphql-axum = "7.0.11"
+http = "1.1.0"
