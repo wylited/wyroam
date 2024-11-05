@@ -13,6 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Graph } from '@/components/Graph'
+import { CommandMenu } from '@/components/Command'
+import { NodeSearch } from '@/components/NodeSearch'
 import {
   Waypoints,
   Moon,
@@ -36,9 +38,8 @@ export function Sidebar() {
             <Graph />
           </SheetContent>
         </Sheet>
-        <Button variant="ghost" className="h-10 w-10">
-          <FileSearch />
-        </Button>
+        <CommandMenu />
+        <NodeSearch />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
