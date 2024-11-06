@@ -97,8 +97,8 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
     setUndoStack([])
   }
 
-  const peek = () => {
-    return nodeStack.length > 0 ? nodeStack[nodeStack.length - 1] : undefined
+  const peek = (val: number) => {
+    return nodeStack.length > 0 ? nodeStack[nodeStack.length - val] : undefined
   }
 
   const getStack = () => nodeStack
