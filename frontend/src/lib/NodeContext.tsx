@@ -15,7 +15,7 @@ interface NodeContextType {
   pop: () => string | undefined
   undo: () => void
   clear: () => void
-  peek: () => string | undefined
+  peek: (val: number) => string | undefined
   getStack: () => string[]
   getUndoStack: () => string[]
 }

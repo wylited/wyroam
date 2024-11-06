@@ -71,3 +71,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+.writing-mode-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
