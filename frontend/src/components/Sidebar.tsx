@@ -32,7 +32,7 @@ export function Sidebar() {
             <Waypoints />
           </Button>
         </SheetTrigger>
-        <SheetContent className="bg-white">
+        <SheetContent className="bg-white min-w-[70vw]">
           <Graph />
         </SheetContent>
       </Sheet>

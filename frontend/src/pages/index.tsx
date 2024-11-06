@@ -11,7 +11,6 @@ export default function Home() {
         <Panels />
       </main>
       <Sidebar />
-      <Tabs />
     </div>
   )
 }
