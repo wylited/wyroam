@@ -24,19 +24,18 @@ interface GraphData {
 }
 
 export function Graph() {
-  const { nodes, nodeStack, peek } = useNodes();
+  const { nodes, nodeStack, peek, push } = useNodes();
   const [graphData, setGraphData] = useState<GraphData>({ nodes: [], links: [] });
   const [mounted, setMounted] = useState(false);
-  const [dimensions, setDimensions] = useState({ width: 400, height: 400 }); // Default dimensions
+  const [dimensions, setDimensions] = useState({ width: 200, height: 400 });
 
   useEffect(() => {
     setMounted(true);
-    // Get the sidebar dimensions
     const updateDimensions = () => {
       const sidebar = document.querySelector('[data-sidebar]');
       if (sidebar) {
         const { width, height } = sidebar.getBoundingClientRect();
-        setDimensions({ width, height: height * 0.5 }); // 50vh
+        setDimensions({ width, height: height * 0.5 });
       }
     };
 
@@ -114,6 +113,10 @@ export function Graph() {
         width={dimensions.width}
         height={dimensions.height}
         nodeLabel={node => `${(node as any).title}`}
+        onNodeClick={(node) => {
+          const clickedNode = node as GraphData['nodes'][0];
+          push(clickedNode.id);
+        }}
         nodeCanvasObject={(node, ctx, globalScale) => {
           const label = (node as any).title;
           const fontSize = 8/globalScale;
@@ -122,7 +125,6 @@ export function Graph() {
           const colors = ['#ff4444', '#44ff44', '#4444ff'];
           ctx.fillStyle = colors[(node as any).level] || '#999';
 
-          // Larger node circles
           ctx.beginPath();
           ctx.arc(node.x!, node.y!, 4, 0, 2 * Math.PI);
           ctx.fill();
@@ -132,7 +134,6 @@ export function Graph() {
           ctx.textBaseline = 'middle';
           ctx.fillText(label, node.x!, node.y! + 12);
         }}
-
         linkColor={() => '#999'}
         backgroundColor="#f1f1f1"
         forceEngine="d3"
@@ -140,15 +141,13 @@ export function Graph() {
         warmupTicks={100}
         cooldownTicks={100}
         onEngineStop={() => {
-          // Optional: Reheat the simulation periodically
           setTimeout(() => {
             const fg = document.querySelector('canvas')?.__data__;
             if (fg) fg.d3ReheatSimulation();
           }, 2000);
         }}
-        height={window.innerHeight - 50}
-
         width={window.innerWidth}
+        height={window.innerHeight-40}
       />
     </div>
   );
