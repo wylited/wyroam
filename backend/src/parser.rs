@@ -39,7 +39,6 @@ pub fn parse_file(path: &PathBuf) -> Result<Node> {
         .unwrap_or_else(|| HashSet::new());
 
     let mut links = HashSet::new();
-
     let mut links_handler = from_fn(|event| {
         if matches!(event, Event::Enter(Container::Link(_))) {
             if let Event::Enter(Container::Link(value)) = event {
@@ -47,7 +46,6 @@ pub fn parse_file(path: &PathBuf) -> Result<Node> {
             }
         }
     });
-
     org.traverse(&mut links_handler);
 
     Ok(Node {

@@ -19,3 +19,4 @@ tower-http = { version = "0.6.1", features = ["fs", "trace", "cors"] }
 async-graphql = "7.0.11"
 async-graphql-axum = "7.0.11"
 http = "1.1.0"
+rayon = "1.10.0"
