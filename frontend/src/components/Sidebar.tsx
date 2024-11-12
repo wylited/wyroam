@@ -4,7 +4,6 @@
 import { useState } from 'react'
 import * as React from "react"
 import { useTheme } from "next-themes"
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -12,6 +11,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+} from "@/components/ui/dialog"
 import { Graph } from '@/components/Graph'
 import { CommandMenu } from '@/components/Command'
 import { NodeSearch } from '@/components/NodeSearch'
@@ -26,16 +30,16 @@ export function Sidebar() {
 
   return (
     <div className="fixed right-0 top-0 h-screen w-16 bg-background border-l flex flex-col items-center py-4 space-y-4 z-50">
-      <Sheet>
-        <SheetTrigger asChild>
+      <Dialog>
+        <DialogTrigger asChild>
           <Button variant="ghost" className="h-10 w-10">
             <Waypoints />
           </Button>
-        </SheetTrigger>
-        <SheetContent className="bg-white min-w-[70vw]">
+        </DialogTrigger>
+        <DialogContent className="bg-white min-w-[70vw]">
           <Graph />
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
       <CommandMenu />
       <NodeSearch />
       <DropdownMenu>

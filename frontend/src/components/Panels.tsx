@@ -2,42 +2,46 @@
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 import { useNodes } from "@/lib/NodeContext"
-import { TabList } from "@/components/TabList"
+import { useTabs } from "@/lib/TabContext"
 import * as React from "react"
 
 export function Panels() {
   const { nodes } = useNodes()
-  const tabList = TabList()
+  const {
+    cycleLeftViewLeft,
+    cycleLeftViewRight,
+    cycleRightViewLeft,
+    cycleRightViewRight,
+    leftView,
+    rightView
+  } = useTabs()
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey) {
-        if (e.key === 'ArrowLeft') {
+        if (e.key === 'ArrowDown') {
           e.preventDefault()
-          tabList.cycleLeftViewLeft()
-        } else if (e.key === 'ArrowRight') {
+          cycleLeftViewLeft()
+        } else if (e.key === 'ArrowUp') {
           e.preventDefault()
-          tabList.cycleLeftViewRight()
+          cycleLeftViewRight()
         }
       } else if (e.altKey) {
-        if (e.key === 'ArrowLeft') {
+        if (e.key === 'ArrowDown') {
           e.preventDefault()
-          tabList.cycleRightViewLeft()
-        } else if (e.key === 'ArrowRight') {
+          cycleRightViewLeft()
+        } else if (e.key === 'ArrowDown') {
           e.preventDefault()
-          tabList.cycleRightViewRight()
+          cycleRightViewRight()
         }
       }
     }
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [tabList])
+  }, [cycleLeftViewLeft, cycleLeftViewRight, cycleRightViewLeft, cycleRightViewRight])
 
   const getPanelNodes = () => {
-    const leftView = tabList.leftView
-    const rightView = tabList.rightView
-
     return {
       leftNode: leftView ? nodes.find(node => node.id === leftView.id) || null : null,
       rightNode: rightView ? nodes.find(node => node.id === rightView.id) || null : null

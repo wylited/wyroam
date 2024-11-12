@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
+import React, { useEffect, useState, useRef } from 'react';
+import dynamic from 'next/dynamic'; // used to zoom in the canvas to fit
 import { useNodes } from '@/lib/NodeContext';
-import { TabList } from "@/components/TabList"
+import { useTabs } from "@/lib/TabContext";
 
 const ForceGraph2D = dynamic(
   () => import('react-force-graph-2d'),
@@ -24,10 +24,11 @@ interface GraphData {
 }
 
 export function Graph() {
-  const { nodes } = useNodes();
-  const tabList = TabList();
+  const { nodeMap } = useNodes();
+  const { leftView, rightView, head, addTab } = useTabs();
   const [graphData, setGraphData] = useState<GraphData>({ nodes: [], links: [] });
   const [mounted, setMounted] = useState(false);
+  const fgRef = useRef<any>(null); // Reference for the ForceGraph2D
 
   // Set mounted state when component mounts
   useEffect(() => {
@@ -36,19 +37,18 @@ export function Graph() {
 
   useEffect(() => {
     // Check if there are active tabs
-    if (!tabList.leftView && !tabList.rightView) {
+    if (!leftView && !rightView) {
       setGraphData({ nodes: [], links: [] });
       return;
     }
 
-    const nodeMap = new Map(nodes.map(node => [node.id, node]));
     const visited = new Set<string>();
     const graphNodes: GraphData['nodes'] = [];
     const graphLinks: GraphData['links'] = [];
 
     const centerNodeIds: string[] = [];
-    if (tabList.leftView) centerNodeIds.push(tabList.leftView.id);
-    if (tabList.rightView) centerNodeIds.push(tabList.rightView.id);
+    if (leftView) centerNodeIds.push(leftView.id);   // simple nullcheck before passing the
+    if (rightView) centerNodeIds.push(rightView.id); // id to the starting nodes of bfs
 
     const bfs = (startNodeIds: string[]) => {
       const queue = startNodeIds.map(id => ({ id, level: 0 }));
@@ -58,7 +58,7 @@ export function Graph() {
         if (visited.has(currentId) || level > 2) continue;
 
         visited.add(currentId);
-        const currentNode = nodeMap.get(currentId);
+        const currentNode = nodeMap[currentId];
 
         if (currentNode) {
           graphNodes.push({
@@ -69,7 +69,6 @@ export function Graph() {
           });
 
           if (level < 2) {
-            // Handle links properly by checking if they exist
             currentNode.links?.forEach(link => {
               const targetId = typeof link === 'string' ? link.replace('id:', '') : link;
               if (!visited.has(targetId)) {
@@ -87,17 +86,19 @@ export function Graph() {
 
     bfs(centerNodeIds);
     setGraphData({ nodes: graphNodes, links: graphLinks });
-  }, [nodes, tabList.leftView, tabList.rightView]);
+  }, [nodeMap, leftView, rightView]);
+
 
   if (!mounted) return null;
 
-  if (!tabList.head) {
+  if (!head) {
     return <div className="text-center p-4">No nodes open</div>;
   }
 
   return (
     <div className="w-full h-[100vh] overflow-hidden">
       <ForceGraph2D
+        ref={fgRef}
         graphData={graphData}
         nodeLabel={node => `${(node as any).title}`}
         warmupTicks={100}
@@ -105,23 +106,24 @@ export function Graph() {
         nodeAutoColorBy={node => `${(node as any).level}`}
         width={typeof window !== 'undefined' ? window.innerWidth : 0}
         height={typeof window !== 'undefined' ? window.innerHeight - 40 : 0}
+        onNodeClick={(node) => {
+          const clickedNode = node as GraphData['nodes'][0];
+          addTab(clickedNode.id);
+        }}
         nodeCanvasObject={(node, ctx, globalScale) => {
           const label = (node as any).title;
-          const fontSize = 10/globalScale;
+          const fontSize = 10 / globalScale;
           ctx.font = `${fontSize}px Sans-Serif`;
 
-          // Draw node
           ctx.beginPath();
-          ctx.arc(node.x!, node.y!, 4, 0, 2 * Math.PI);
+          ctx.arc(node.x!, node.y!, 2, 0, 2 * Math.PI);
           ctx.fillStyle = node.color;
           ctx.fill();
 
-          // Draw text below node
           ctx.textAlign = 'center';
           ctx.fillStyle = '#000';
-          ctx.fillText(label, node.x!, node.y! + 18/globalScale);
+          ctx.fillText(label, node.x!, node.y! + 18 / globalScale);
         }}
-
         nodePointerAreaPaint={(node, color, ctx) => {
           ctx.beginPath();
           ctx.arc(node.x!, node.y!, 4, 0, 2 * Math.PI);

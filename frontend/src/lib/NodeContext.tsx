@@ -3,33 +3,22 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Node } from '@/lib/Node'
 import { Button } from '@/components/ui/button'
+
 interface NodeContextType {
-  nodes: Node[]
-  loading: boolean
-  error: Error | null
-  refetch: () => Promise<void>
-  // Stack-related state and functions
-  nodeStack: string[]
-  undoStack: string[]
-  push: (nodeId: string) => void
-  pop: () => string | undefined
-  undo: () => void
-  clear: () => void
-  peek: () => string | undefined
-  getStack: () => string[]
-  getUndoStack: () => string[]
+  nodes: Node[];
+  nodeMap: { [id: string]: Node };
+  loading: boolean;
+  error: Error | null;
+  refetch: () => Promise<void>;
 }
 
 const NodeContext = createContext<NodeContextType | undefined>(undefined)
 
 export function NodeProvider({ children }: { children: React.ReactNode }) {
   const [nodes, setNodes] = useState<Node[]>([])
+  const [nodeMap, setNodeMap] = useState<{ [id: string]: Node }>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
-
-  // Stack-related state
-  const [nodeStack, setNodeStack] = useState<string[]>([])
-  const [undoStack, setUndoStack] = useState<string[]>([])
 
   const fetchNodes = async () => {
     try {
@@ -70,43 +59,18 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Stack operations
-  const push = (nodeId: string) => {
-    setNodeStack(prevStack => [...prevStack, nodeId])
-  }
-
-  const pop = () => {
-    if (nodeStack.length === 0) return undefined
-
-    const lastNode = nodeStack[nodeStack.length - 1]
-    setNodeStack(prevStack => prevStack.slice(0, -1))
-    setUndoStack(prevUndo => [...prevUndo, lastNode])
-    return lastNode
-  }
-
-  const undo = () => {
-    if (undoStack.length === 0) return
-
-    const nodeToRestore = undoStack[undoStack.length - 1]
-    setUndoStack(prevUndo => prevUndo.slice(0, -1))
-    setNodeStack(prevStack => [...prevStack, nodeToRestore])
-  }
-
-  const clear = () => {
-    setNodeStack([])
-    setUndoStack([])
-  }
-
-  const peek = (n: node) => {
-    return nodeStack.length > 0 ? nodeStack[nodeStack.length - 1] : undefined
-  }
-
-  const getStack = () => nodeStack
-  const getUndoStack = () => undoStack
-
   useEffect(() => {
     fetchNodes()
   }, [])
+
+  useEffect(() => {
+    const map = nodes.reduce((acc, node) => {
+      acc[node.id] = node
+      return acc
+    }, {} as { [id: string]: Node })
+
+    setNodeMap(map)
+  }, [nodes])
 
   const refetch = async () => {
     setLoading(true)
@@ -116,18 +80,10 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
   return (
     <NodeContext.Provider value={{
       nodes,
+      nodeMap,
       loading,
       error,
       refetch,
-      nodeStack,
-      undoStack,
-      push,
-      pop,
-      undo,
-      clear,
-      peek,
-      getStack,
-      getUndoStack
     }}>
       {children}
     </NodeContext.Provider>
@@ -140,62 +96,4 @@ export function useNodes() {
     throw new Error('useNodes must be used within a NodeProvider')
   }
   return context
-}
-
-// Custom hook for stack operations
-export function useStack() {
-  const context = useContext(NodeContext)
-  if (context === undefined) {
-    throw new Error('useStack must be used within a NodeProvider')
-  }
-
-  return {
-    push: context.push,
-    pop: context.pop,
-    undo: context.undo,
-    clear: context.clear,
-    peek: context.peek,
-    getStack: context.getStack,
-    getUndoStack: context.getUndoStack,
-    nodeStack: context.nodeStack,
-    undoStack: context.undoStack
-  }
-}
-
-// Modified NodeList component to display the stack
-export function NodeList() {
-  const { nodes, loading, error } = useNodes()
-  const { nodeStack, undoStack, pop } = useStack()
-
-  if (loading) return <div>Loading...</div>
-  if (error) return <div>Error: {error.message}</div>
-
-  // Find nodes that are in the stack
-  const stackNodes = nodeStack.map(nodeId =>
-    nodes.find(node => node.id === nodeId)
-  ).filter((node): node is Node => node !== undefined)
-
-  return (
-    <div className="prose">
-      <h2>Current Stack</h2>
-      {stackNodes.map((node, index) => (
-        <div key={`${node.id}-${index}`} className="p-4 border-b">
-          <h3 className="text-xl font-bold">{node.title}</h3>
-          <p className="text-sm text-gray-500">ID: {node.id}</p>
-          {node.tags.length > 0 && (
-            <p className="text-sm">Tags: {node.tags.join(', ')}</p>
-          )}
-        </div>
-      ))}
-      <Button onClick={pop}>X</Button>
-      {stackNodes.length === 0 && (
-        <p>Stack is empty</p>
-      )}
-
-      <h2 className="mt-4">Undo Stack</h2>
-      <p className="text-sm text-gray-500">
-        Items in undo stack: {undoStack.length}
-      </p>
-    </div>
-  )
 }
