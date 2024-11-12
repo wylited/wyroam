@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useNodes } from '@/lib/NodeContext';
-import { Node } from '@/lib/Node';
+import { TabList } from "@/components/TabList"
 
 const ForceGraph2D = dynamic(
   () => import('react-force-graph-2d'),
@@ -24,28 +24,19 @@ interface GraphData {
 }
 
 export function Graph() {
-  const { nodes, nodeStack, peek, push } = useNodes();
+  const { nodes } = useNodes();
+  const tabList = TabList();
   const [graphData, setGraphData] = useState<GraphData>({ nodes: [], links: [] });
   const [mounted, setMounted] = useState(false);
-  const [dimensions, setDimensions] = useState({ width: 200, height: 400 });
 
+  // Set mounted state when component mounts
   useEffect(() => {
     setMounted(true);
-    const updateDimensions = () => {
-      const sidebar = document.querySelector('[data-sidebar]');
-      if (sidebar) {
-        const { width, height } = sidebar.getBoundingClientRect();
-        setDimensions({ width, height: height * 0.5 });
-      }
-    };
-
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
   useEffect(() => {
-    if (nodeStack.length === 0) {
+    // Check if there are active tabs
+    if (!tabList.leftView && !tabList.rightView) {
       setGraphData({ nodes: [], links: [] });
       return;
     }
@@ -56,11 +47,8 @@ export function Graph() {
     const graphLinks: GraphData['links'] = [];
 
     const centerNodeIds: string[] = [];
-    const firstNode = peek(1);
-    const secondNode = peek(2);
-
-    if (firstNode) centerNodeIds.push(firstNode);
-    if (secondNode) centerNodeIds.push(secondNode);
+    if (tabList.leftView) centerNodeIds.push(tabList.leftView.id);
+    if (tabList.rightView) centerNodeIds.push(tabList.rightView.id);
 
     const bfs = (startNodeIds: string[]) => {
       const queue = startNodeIds.map(id => ({ id, level: 0 }));
@@ -81,8 +69,9 @@ export function Graph() {
           });
 
           if (level < 2) {
-            currentNode.links.forEach(link => {
-              const targetId = link.replace('id:', '');
+            // Handle links properly by checking if they exist
+            currentNode.links?.forEach(link => {
+              const targetId = typeof link === 'string' ? link.replace('id:', '') : link;
               if (!visited.has(targetId)) {
                 queue.push({ id: targetId, level: level + 1 });
                 graphLinks.push({
@@ -98,56 +87,47 @@ export function Graph() {
 
     bfs(centerNodeIds);
     setGraphData({ nodes: graphNodes, links: graphLinks });
-  }, [nodes, nodeStack, peek]);
+  }, [nodes, tabList.leftView, tabList.rightView]);
 
   if (!mounted) return null;
 
-  if (nodeStack.length === 0) {
-    return <div className="text-center p-4">No nodes in stack</div>;
+  if (!tabList.head) {
+    return <div className="text-center p-4">No nodes open</div>;
   }
 
   return (
     <div className="w-full h-[100vh] overflow-hidden">
       <ForceGraph2D
         graphData={graphData}
-        width={dimensions.width}
-        height={dimensions.height}
         nodeLabel={node => `${(node as any).title}`}
-        onNodeClick={(node) => {
-          const clickedNode = node as GraphData['nodes'][0];
-          push(clickedNode.id);
-        }}
-        nodeCanvasObject={(node, ctx, globalScale) => {
-          const label = (node as any).title;
-          const fontSize = 8/globalScale;
-          ctx.font = `${fontSize}px Sans-Serif`;
-
-          const colors = ['#ff4444', '#44ff44', '#4444ff'];
-          ctx.fillStyle = colors[(node as any).level] || '#999';
-
-          ctx.beginPath();
-          ctx.arc(node.x!, node.y!, 4, 0, 2 * Math.PI);
-          ctx.fill();
-
-          ctx.fillStyle = '#000';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(label, node.x!, node.y! + 12);
-        }}
-        linkColor={() => '#999'}
-        backgroundColor="#f1f1f1"
-        forceEngine="d3"
-        d3Force='charge'
         warmupTicks={100}
         cooldownTicks={100}
-        onEngineStop={() => {
-          setTimeout(() => {
-            const fg = document.querySelector('canvas')?.__data__;
-            if (fg) fg.d3ReheatSimulation();
-          }, 2000);
+        nodeAutoColorBy={node => `${(node as any).level}`}
+        width={typeof window !== 'undefined' ? window.innerWidth : 0}
+        height={typeof window !== 'undefined' ? window.innerHeight - 40 : 0}
+        nodeCanvasObject={(node, ctx, globalScale) => {
+          const label = (node as any).title;
+          const fontSize = 10/globalScale;
+          ctx.font = `${fontSize}px Sans-Serif`;
+
+          // Draw node
+          ctx.beginPath();
+          ctx.arc(node.x!, node.y!, 4, 0, 2 * Math.PI);
+          ctx.fillStyle = node.color;
+          ctx.fill();
+
+          // Draw text below node
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#000';
+          ctx.fillText(label, node.x!, node.y! + 18/globalScale);
         }}
-        width={window.innerWidth}
-        height={window.innerHeight-40}
+
+        nodePointerAreaPaint={(node, color, ctx) => {
+          ctx.beginPath();
+          ctx.arc(node.x!, node.y!, 4, 0, 2 * Math.PI);
+          ctx.fillStyle = color;
+          ctx.fill();
+        }}
       />
     </div>
   );

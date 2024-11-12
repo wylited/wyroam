@@ -13,7 +13,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Node } from "@/lib/Node"
 import { useNodeSearch } from "@/lib/Search"
-import { useNodes, useStack } from "@/lib/NodeContext"
+import { useNodes } from "@/lib/NodeContext"
+import { TabList } from "@/components/TabList"
 
 interface NodeSearchProps {
     onSelect?: (node: Node) => void
@@ -21,7 +22,7 @@ interface NodeSearchProps {
 
 export function NodeSearch({ onSelect }: NodeSearchProps) {
     const { loading, error } = useNodes()
-    const { push } = useStack() // Add this line
+    const tabList = TabList()
     const { searchQuery, setSearchQuery, searchResults } = useNodeSearch()
     const [open, setOpen] = React.useState(false)
 
@@ -42,7 +43,7 @@ export function NodeSearch({ onSelect }: NodeSearchProps) {
     }, [])
 
     const handleSelect = (node: Node) => {
-        push(node.id)
+        tabList.addTab(node.id)
 
         if (onSelect) {
             onSelect(node)

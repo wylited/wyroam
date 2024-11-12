@@ -1,4 +1,3 @@
-//@/lib/NodeContext.tsx
 "use client"
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
@@ -16,7 +15,7 @@ interface NodeContextType {
   pop: () => string | undefined
   undo: () => void
   clear: () => void
-  peek: (val: number) => string | undefined
+  peek: () => string | undefined
   getStack: () => string[]
   getUndoStack: () => string[]
 }
@@ -98,8 +97,8 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
     setUndoStack([])
   }
 
-  const peek = (val: number) => {
-    return nodeStack.length > 0 ? nodeStack[nodeStack.length - val] : undefined
+  const peek = (n: node) => {
+    return nodeStack.length > 0 ? nodeStack[nodeStack.length - 1] : undefined
   }
 
   const getStack = () => nodeStack
