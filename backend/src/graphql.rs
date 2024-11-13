@@ -1,7 +1,7 @@
 use async_graphql::{Object, Schema, EmptyMutation, EmptySubscription, SimpleObject};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::Extension;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use crate::db::Db;
 use crate::node::Node;
 
@@ -31,33 +31,46 @@ impl From<Node> for NodeQL {
 }
 
 pub struct QueryRoot {
-    pub db: Arc<Db>,
+    pub db: Arc<Mutex<Db>>,
 }
 
 #[Object]
 impl QueryRoot {
     async fn all_node_ids(&self) -> Vec<String> {
-        self.db.id_map.keys().cloned().collect()
+        self.db.lock()
+            .unwrap()
+            .id_map
+            .keys()
+            .cloned()
+            .collect()
     }
 
     async fn all_nodes(&self) -> Vec<NodeQL> {
-        self.db.id_map.values()
+        self.db.lock()
+            .unwrap()
+            .id_map
+            .values()
             .cloned()
             .map(NodeQL::from)
             .collect()
     }
 
     async fn node(&self, id: String) -> Option<NodeQL> {
-        self.db.id_map.get(&id).cloned().map(NodeQL::from)
+        self.db.lock()
+            .unwrap()
+            .id_map
+            .get(&id)
+            .cloned()
+            .map(NodeQL::from)
     }
 
     async fn nodes_by_alias(&self, alias: String) -> Vec<NodeQL> {
-        self.db
-            .aliases
+        let db = self.db.lock().unwrap();
+        db.aliases
             .get(&alias)
             .map(|ids| {
                 ids.iter()
-                    .filter_map(|id| self.db.id_map.get(id))
+                    .filter_map(|id| db.id_map.get(id))
                     .cloned()
                     .map(NodeQL::from)
                     .collect()
@@ -66,12 +79,12 @@ impl QueryRoot {
     }
 
     async fn nodes_by_tag(&self, tag: String) -> Vec<NodeQL> {
-        self.db
-            .tags
+        let db = self.db.lock().unwrap();
+        db.tags
             .get(&tag)
             .map(|ids| {
                 ids.iter()
-                    .filter_map(|id| self.db.id_map.get(id))
+                    .filter_map(|id| db.id_map.get(id))
                     .cloned()
                     .map(NodeQL::from)
                     .collect()
@@ -80,7 +93,8 @@ impl QueryRoot {
     }
 
     async fn alias_count(&self, alias: String) -> usize {
-        self.db
+        self.db.lock()
+            .unwrap()
             .aliases
             .get(&alias)
             .map(|ids| ids.len())
@@ -88,7 +102,8 @@ impl QueryRoot {
     }
 
     async fn tag_count(&self, tag: String) -> usize {
-        self.db
+        self.db.lock()
+            .unwrap()
             .tags
             .get(&tag)
             .map(|ids| ids.len())

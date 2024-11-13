@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, sync::Mutex};
 use tower_http::{
     services::ServeDir,
     cors::{CorsLayer, Any}, // Add this import
@@ -11,8 +11,8 @@ use std::sync::Arc;
 use crate::{db::Db, graphql::{self, QueryRoot}};
 use async_graphql::{EmptySubscription, EmptyMutation, Schema};
 
-pub fn router(input: PathBuf, db: Db) -> Router {
-    let schema = Schema::build(QueryRoot { db: Arc::new(db) }, EmptyMutation, EmptySubscription)
+pub fn router(input: PathBuf, db: Arc<Mutex<Db>>) -> Router {
+    let schema = Schema::build(QueryRoot { db }, EmptyMutation, EmptySubscription)
         .finish();
 
     // Add CORS middleware
