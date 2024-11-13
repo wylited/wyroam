@@ -155,7 +155,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
       newView = newView.prev || getLastTab()
     }
     if (!newView) return
-    setLeftView(newView)
+    setRightView(newView)
   }
 
   const cycleRightViewRight = () => {
@@ -165,7 +165,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
       newView = newView.next || getLastTab()
     }
     if (!newView) return
-    setLeftView(newView)
+    setRightView(newView)
   }
 
   // Helper function to prevent overcycling.

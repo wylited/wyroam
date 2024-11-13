@@ -3,6 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 import { useNodes } from "@/lib/NodeContext"
 import { useTabs } from "@/lib/TabContext"
+import { Panel } from '@/components/Panel';
 import * as React from "react"
 
 export function Panels() {
@@ -65,13 +66,7 @@ export function Panels() {
       <ResizablePanel defaultSize={50}>
         <ScrollArea className="h-screen">
           <div className="p-6">
-            <div className="prose max-w-none">
-              {leftNode ? (
-                <div dangerouslySetInnerHTML={{ __html: leftNode.html }} />
-              ) : (
-                <p>No content in left panel</p>
-              )}
-            </div>
+            <Panel node={leftNode} />
           </div>
         </ScrollArea>
       </ResizablePanel>
@@ -79,13 +74,7 @@ export function Panels() {
       <ResizablePanel defaultSize={50}>
         <ScrollArea className="h-screen">
           <div className="p-6">
-            <div className="prose max-w-none">
-              {rightNode ? (
-                <div dangerouslySetInnerHTML={{ __html: rightNode.html }} />
-              ) : (
-                <p>No content in right panel</p>
-              )}
-            </div>
+            <Panel node={rightNode} />
           </div>
         </ScrollArea>
       </ResizablePanel>

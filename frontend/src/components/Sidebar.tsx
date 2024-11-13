@@ -29,6 +29,19 @@ export function Sidebar() {
   const { setTheme } = useTheme()
   const [mounted, setMounted] = useState(false);
 
+  React.useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "g" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setMounted(!mounted)
+      }
+    }
+
+    document.addEventListener("keydown", down)
+    return () => document.removeEventListener("keydown", down)
+  }, [])
+
+
   return (
     <div className="fixed right-0 top-0 h-screen w-16 bg-background border-l flex flex-col items-center py-4 space-y-4 z-50">
       <Dialog open={mounted} onOpenChange={setMounted}>

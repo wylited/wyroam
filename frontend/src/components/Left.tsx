@@ -1,0 +1,54 @@
+import { useEffect } from 'react';
+
+// Your component
+function Left({ leftNode }) {
+  useEffect(() => {
+    // Add click handler to all links
+    const handleLinkClick = (e) => {
+      const href = e.target.getAttribute('href');
+
+      // Check if it's an ID-based link (starts with "id:")
+      if (href?.startsWith('id:')) {
+        e.preventDefault(); // Prevent default navigation
+        const id = href.replace('id:', '');
+
+        // Handle different IDs
+        switch (id) {
+          case '6bb247e8-9b75-42b0-b2ad-448a042cd21f':
+            // Your custom action for Syntatic Analysis
+            console.log('Syntatic Analysis clicked');
+            // Add your custom logic here
+            break;
+          // Add more cases as needed
+          default:
+            console.log('Unknown ID:', id);
+        }
+      }
+    };
+
+    // Add event listeners to all links in the content
+    const links = document.querySelectorAll('.prose a');
+    links.forEach(link => {
+      link.addEventListener('click', handleLinkClick);
+    });
+
+    // Cleanup function
+    return () => {
+      links.forEach(link => {
+        link.removeEventListener('click', handleLinkClick);
+      });
+    };
+  }, [leftNode]); // Re-run when leftNode changes
+
+  return (
+    <div className="prose max-w-none">
+      {leftNode ? (
+        <div dangerouslySetInnerHTML={{ __html: leftNode.html }} />
+      ) : (
+        <p>No content in left panel</p>
+      )}
+    </div>
+  );
+}
+
+export default right;
