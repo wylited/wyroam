@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Node } from '@/lib/Node'
-import { Button } from '@/components/ui/button'
 
 interface NodeContextType {
   nodes: Node[];
@@ -58,7 +57,6 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
       setLoading(false)
     }
   }
-
   useEffect(() => {
     fetchNodes()
   }, [])

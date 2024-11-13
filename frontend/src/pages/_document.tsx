@@ -1,5 +1,6 @@
 import { Html, Head, Main, NextScript } from "next/document";
 import { ThemeProvider } from "@/lib/ThemeProvider";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function Document() {
   return (
@@ -8,6 +9,7 @@ export default function Document() {
       <body className="antialiased">
         <Main />
         <NextScript />
+        <Toaster />
       </body>
     </Html>
   );

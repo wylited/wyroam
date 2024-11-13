@@ -13,7 +13,8 @@ export function Panels() {
     cycleRightViewLeft,
     cycleRightViewRight,
     leftView,
-    rightView
+    rightView,
+    undo
   } = useTabs()
 
   React.useEffect(() => {
@@ -25,6 +26,9 @@ export function Panels() {
         } else if (e.key === 'ArrowUp') {
           e.preventDefault()
           cycleLeftViewRight()
+        } else if (e.key === 'z'){
+          e.preventDefault()
+          undo()
         }
       } else if (e.altKey) {
         if (e.key === 'ArrowDown') {
@@ -39,7 +43,10 @@ export function Panels() {
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [cycleLeftViewLeft, cycleLeftViewRight, cycleRightViewLeft, cycleRightViewRight])
+  }, [cycleLeftViewLeft,
+      cycleLeftViewRight,
+      cycleRightViewLeft,
+      cycleRightViewRight])
 
   const getPanelNodes = () => {
     return {

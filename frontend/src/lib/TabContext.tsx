@@ -74,6 +74,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
     let current = head;
     let tabExists = false;
 
+    // If the tab does not exist, return
     while (current) {
       if (current.id === id) {
         tabExists = true;
@@ -81,8 +82,6 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
       }
       current = current.next;
     }
-
-    // If the tab does not exist, return
     if (!tabExists) return;
 
     // Set the right view to the current left view
@@ -91,11 +90,6 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
       prev: null,
       next: leftView
     };
-
-    // Update the previous left view's 'prev' to the new tab
-    if (leftView) {
-      leftView.prev = newTab;
-    }
 
     // Update the views
     setRightView(leftView);
@@ -156,18 +150,22 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
 
   const cycleRightViewLeft = () => {
     if (!rightView) return
-    const newView = rightView.prev || getLastTab()
-    if (newView && newView.id !== leftView?.id) {
-      setRightView(newView)
+    let newView = rightView.prev || getLastTab()
+    if (newView.id == leftView?.id){
+      newView = newView.prev || getLastTab()
     }
+    if (!newView) return
+    setLeftView(newView)
   }
 
   const cycleRightViewRight = () => {
     if (!rightView) return
-    const newView = rightView.next || head
-    if (newView && newView.id !== leftView?.id) {
-      setRightView(newView)
+    let newView = rightView.next || getLastTab()
+    if (newView.id == leftView?.id){
+      newView = newView.next || getLastTab()
     }
+    if (!newView) return
+    setLeftView(newView)
   }
 
   // Helper function to prevent overcycling.

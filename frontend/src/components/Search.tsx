@@ -12,18 +12,18 @@ import {
 } from "@/components/ui/command"
 import { Button } from '@/components/ui/button'
 import { Node } from "@/lib/Node"
-import { useNodeSearch } from "@/lib/Search"
+import { NodeSearch } from "@/lib/Search"
 import { useNodes } from "@/lib/NodeContext"
 import { useTabs } from "@/lib/TabContext"
 
-interface NodeSearchProps {
+interface SearchProps {
     onSelect?: (node: Node) => void
 }
 
-export function NodeSearch({ onSelect }: NodeSearchProps) {
+export function Search({ onSelect }: SearchProps) {
     const { loading, error } = useNodes()
     const { addTab } = useTabs();
-    const { searchQuery, setSearchQuery, searchResults } = useNodeSearch()
+    const { searchQuery, setSearchQuery, searchResults } = NodeSearch()
     const [open, setOpen] = React.useState(false)
 
     function toggleOpen() {

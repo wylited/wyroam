@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog"
 import { Graph } from '@/components/Graph'
 import { CommandMenu } from '@/components/Command'
-import { NodeSearch } from '@/components/NodeSearch'
+import { Search } from '@/components/Search'
 import {
   Waypoints,
   Moon,
@@ -27,21 +27,22 @@ import {
 
 export function Sidebar() {
   const { setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false);
 
   return (
     <div className="fixed right-0 top-0 h-screen w-16 bg-background border-l flex flex-col items-center py-4 space-y-4 z-50">
-      <Dialog>
+      <Dialog open={mounted} onOpenChange={setMounted}>
         <DialogTrigger asChild>
           <Button variant="ghost" className="h-10 w-10">
             <Waypoints />
           </Button>
         </DialogTrigger>
         <DialogContent className="bg-white min-w-[70vw]">
-          <Graph />
+          <Graph mounted={mounted} setMounted={setMounted} />
         </DialogContent>
       </Dialog>
       <CommandMenu />
-      <NodeSearch />
+      <Search />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">

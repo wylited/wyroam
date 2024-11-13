@@ -23,17 +23,16 @@ interface GraphData {
   }>;
 }
 
-export function Graph() {
+interface GraphProps {
+  mounted: boolean;
+  setMounted: (value: boolean) => void;
+}
+
+export function Graph({ mounted, setMounted }: GraphProps) {
   const { nodeMap } = useNodes();
   const { leftView, rightView, head, addTab } = useTabs();
   const [graphData, setGraphData] = useState<GraphData>({ nodes: [], links: [] });
-  const [mounted, setMounted] = useState(false);
   const fgRef = useRef<any>(null); // Reference for the ForceGraph2D
-
-  // Set mounted state when component mounts
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     // Check if there are active tabs
@@ -88,7 +87,6 @@ export function Graph() {
     setGraphData({ nodes: graphNodes, links: graphLinks });
   }, [nodeMap, leftView, rightView]);
 
-
   if (!mounted) return null;
 
   if (!head) {
@@ -96,7 +94,7 @@ export function Graph() {
   }
 
   return (
-    <div className="w-full h-[100vh] overflow-hidden">
+    <div className="w-full h-[90vh] overflow-hidden">
       <ForceGraph2D
         ref={fgRef}
         graphData={graphData}
@@ -109,11 +107,12 @@ export function Graph() {
         onNodeClick={(node) => {
           const clickedNode = node as GraphData['nodes'][0];
           addTab(clickedNode.id);
+          setMounted(false);
         }}
         nodeCanvasObject={(node, ctx, globalScale) => {
           const label = (node as any).title;
-          const fontSize = 10 / globalScale;
-          ctx.font = `${fontSize}px Sans-Serif`;
+          const fontSize = 12 / globalScale;
+          ctx.font = `${fontSize}px Lexend`;
 
           ctx.beginPath();
           ctx.arc(node.x!, node.y!, 2, 0, 2 * Math.PI);
@@ -123,6 +122,7 @@ export function Graph() {
           ctx.textAlign = 'center';
           ctx.fillStyle = '#000';
           ctx.fillText(label, node.x!, node.y! + 18 / globalScale);
+
         }}
         nodePointerAreaPaint={(node, color, ctx) => {
           ctx.beginPath();
