@@ -5,6 +5,7 @@ use std::{
     collections::{HashMap, HashSet},
     path::PathBuf,
     sync::{Arc, Mutex},
+    time::SystemTime,
 };
 use tokio::time::Instant;
 use tracing::{error, info};
@@ -17,6 +18,7 @@ pub struct LiveDb {
     _watcher: RecommendedWatcher, // Keep the watcher alive
 }
 
+// Modify your LiveDb implementation
 impl LiveDb {
     pub fn new(input_dir: PathBuf) -> Result<Self> {
         info!("Initializing LiveDb from directory: {:?}", input_dir);
@@ -25,37 +27,26 @@ impl LiveDb {
         let input_dir_clone = input_dir.clone();
 
         let mut watcher = RecommendedWatcher::new(
-            move |res: Result<Event, notify::Error>| {
-                match res {
-                    Ok(event) => {
-                        // Only rebuild on Create, Modify, or Remove events
-                        match event.kind {
-                            EventKind::Create(_) | EventKind::Modify(_) | EventKind::Remove(_) => {
-                                match Db::new(input_dir_clone.clone()) {
-                                    Ok(new_db) => {
-                                        if let Ok(mut db) = db_clone.lock() {
-                                            *db = new_db;
-                                            info!("Database successfully updated");
-                                        } else {
-                                            error!("Failed to acquire database lock for update");
-                                        }
-                                    }
-                                    Err(e) => error!("Failed to rebuild database: {:?}", e),
+            move |res: Result<Event, notify::Error>| match res {
+                Ok(event) => match event.kind {
+                    EventKind::Create(_) | EventKind::Modify(_) | EventKind::Remove(_) => {
+                        match Db::new(input_dir_clone.clone()) {
+                            Ok(new_db) => {
+                                if let Ok(mut db) = db_clone.lock() {
+                                    *db = new_db;
                                 }
                             }
-                            _ => (),
+                            Err(e) => error!("Failed to rebuild database: {:?}", e),
                         }
                     }
-                    Err(e) => error!("Error watching files: {:?}", e),
-                }
+                    _ => (),
+                },
+                Err(e) => error!("Error watching files: {:?}", e),
             },
             Config::default(),
         )?;
 
-        // Start watching the directory
         watcher.watch(&input_dir, RecursiveMode::Recursive)?;
-        info!("Started watching directory: {:?}", input_dir);
-
         Ok(LiveDb {
             db,
             _watcher: watcher,
@@ -72,6 +63,7 @@ pub struct Db {
     pub id_map: HashMap<String, Node>,
     pub aliases: HashMap<String, HashSet<String>>,
     pub tags: HashMap<String, HashSet<String>>,
+    pub last_updated: SystemTime,
 }
 
 impl Db {
@@ -122,6 +114,7 @@ impl Db {
             id_map: id_map.into_inner().unwrap(),
             aliases: aliases.into_inner().unwrap(),
             tags: tags.into_inner().unwrap(),
+            last_updated: SystemTime::now(),
         })
     }
 }

@@ -1,7 +1,6 @@
-use async_graphql::{Object, Schema, EmptyMutation, EmptySubscription, SimpleObject};
-use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
-use axum::Extension;
+use async_graphql::{Object, SimpleObject};
 use std::sync::{Arc, Mutex};
+use std::time::SystemTime;
 use crate::db::Db;
 use crate::node::Node;
 
@@ -109,12 +108,14 @@ impl QueryRoot {
             .map(|ids| ids.len())
             .unwrap_or(0)
     }
-}
 
-// Integration with Axum
-pub async fn graphql_handler(
-    schema: Extension<Schema<QueryRoot, EmptyMutation, EmptySubscription>>,
-    req: GraphQLRequest,
-) -> GraphQLResponse {
-    schema.execute(req.into_inner()).await.into()
+    async fn last_updated(&self) -> String {
+        self.db.lock()
+            .unwrap()
+            .last_updated
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_secs()
+            .to_string()
+    }
 }

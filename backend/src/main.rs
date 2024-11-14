@@ -33,7 +33,7 @@ async fn main() -> Result<()> {
     let db = live_db.get_db();
 
     // Try to host API
-    let listener = tokio::net::TcpListener::bind("localhost:8000").await
+    let listener = tokio::net::TcpListener::bind("localhost:4000").await
         .map_err(|e| anyhow::anyhow!("failed to bind listener: {}", e))?;
 
     // Keep LiveDb alive

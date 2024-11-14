@@ -1,15 +1,16 @@
 use std::{path::PathBuf, sync::Mutex};
+use async_graphql_axum::{GraphQL};
 use tower_http::{
     services::ServeDir,
     cors::{CorsLayer, Any}, // Add this import
 };
 use axum::{
-    routing::{get, post}, Router, Extension
+    response::{self, IntoResponse}, routing::{get}, Router
 };
 use std::sync::Arc;
 
-use crate::{db::Db, graphql::{self, QueryRoot}};
-use async_graphql::{EmptySubscription, EmptyMutation, Schema};
+use crate::{db::{Db}, graphql::{QueryRoot}};
+use async_graphql::{http::GraphiQLSource, EmptyMutation, EmptySubscription, Schema};
 
 pub fn router(input: PathBuf, db: Arc<Mutex<Db>>) -> Router {
     let schema = Schema::build(QueryRoot { db }, EmptyMutation, EmptySubscription)
@@ -25,15 +26,19 @@ pub fn router(input: PathBuf, db: Arc<Mutex<Db>>) -> Router {
 
     Router::new()
         .route("/", get(root))
-        .route("/graph", post(graphql::graphql_handler))
+        .route("/graphql", get(graphiql).post_service(GraphQL::new(schema.clone())))
         .nest_service(
             "/notes",
             ServeDir::new(input),
         )
-        .layer(Extension(schema))
         .layer(cors) // Add the CORS middleware
 }
 
 async fn root() -> &'static str {
     "Wyroam Backend"
+}
+
+
+async fn graphiql() -> impl IntoResponse {
+    response::Html(GraphiQLSource::build().endpoint("/graphql").subscription_endpoint("/subscribe").finish())
 }

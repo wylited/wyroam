@@ -18,10 +18,44 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
   const [nodeMap, setNodeMap] = useState<{ [id: string]: Node }>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
+  const [lastUpdated, setLastUpdated] = useState<string>('0')
+
+  const checkUpdates = async () => {
+    try {
+      const response = await fetch('http://localhost:4000/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            query {
+              lastUpdated
+            }
+          `
+        }),
+      })
+
+      const data = await response.json()
+
+      if (data.errors) {
+        throw new Error(data.errors[0].message)
+      }
+
+      if (lastUpdated !== data.data.lastUpdated){
+        console.log(lastUpdated);
+        console.log(data.data.lastUpdated)
+        setLastUpdated(data.data.lastUpdated);
+      }
+
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to check updates'))
+    }
+  }
 
   const fetchNodes = async () => {
     try {
-      const response = await fetch('http://localhost:8000/graph', {
+      const response = await fetch('http://localhost:4000/graphql', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,6 +72,7 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
                 links
                 html
               }
+              lastUpdated
             }
           `
         }),
@@ -50,6 +85,7 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
       }
 
       setNodes(data.data.allNodes)
+      setLastUpdated(data.data.lastUpdated)
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch nodes'))
@@ -57,9 +93,16 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
       setLoading(false)
     }
   }
+
   useEffect(() => {
-    fetchNodes()
-  }, [])
+    fetchNodes();
+  }, []);
+
+  useEffect(() => {
+    console.log(lastUpdated)
+    fetchNodes();
+  }, [lastUpdated]);
+
 
   useEffect(() => {
     const map = nodes.reduce((acc, node) => {
@@ -74,6 +117,14 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
     setLoading(true)
     await fetchNodes()
   }
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      checkUpdates();
+    }, 2000);
+
+    return () => clearInterval(intervalId);
+  }, [lastUpdated]);
 
   return (
     <NodeContext.Provider value={{
