@@ -62,8 +62,8 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
     }
 
     setHead(newTab)
-    setLeftView(newTab)
     setRightView(leftView)
+    setLeftView(newTab)
   }
 
   const pushTab = (id: string) => {

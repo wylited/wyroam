@@ -29,14 +29,14 @@ pub fn parse_file(path: &PathBuf) -> Result<Node> {
     let aliases: HashSet<String> = properties
         .get("ROAM_ALIASES")
         .map(|s| s.split_whitespace().map(String::from).collect())
-        .unwrap_or_else(|| HashSet::new());
+        .unwrap_or_else(HashSet::new);
 
     let tags: HashSet<String> = org
         .document()
         .keywords()
         .find(|keyword| keyword.key() == "filetags")
         .map(|keyword| keyword.value().split(':').map(String::from).collect())
-        .unwrap_or_else(|| HashSet::new());
+        .unwrap_or_else(HashSet::new);
 
     let mut links = HashSet::new();
     let mut links_handler = from_fn(|event| {

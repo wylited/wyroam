@@ -84,27 +84,32 @@ impl Db {
         // Process files in parallel
         org_files.par_iter().for_each(|path| {
             let start = Instant::now();
-            if let Ok(node) = parse_file(path) {
-                let duration = start.elapsed();
-                info!("Parsed file: {}, took: {:?}", path.display(), duration);
-                // Update id_map
-                id_map.lock().unwrap().insert(node.id.clone(), node.clone());
+            match parse_file(path) {
+                Ok(node) => {
+                    let duration = start.elapsed();
+                    info!("Parsed file: {}, took: {:?}", path.display(), duration);
+                    // Update id_map
+                    id_map.lock().unwrap().insert(node.id.clone(), node.clone());
 
-                // Update aliases
-                let mut aliases_guard = aliases.lock().unwrap();
-                for alias in &node.aliases {
-                    aliases_guard
-                        .entry(alias.clone())
-                        .or_insert_with(HashSet::new)
-                        .insert(node.id.clone());
+                    // Update aliases
+                    let mut aliases_guard = aliases.lock().unwrap();
+                    for alias in &node.aliases {
+                        aliases_guard
+                            .entry(alias.clone())
+                            .or_insert_with(HashSet::new)
+                            .insert(node.id.clone());
+                    }
+                    // Update tags
+                    let mut tags_guard = tags.lock().unwrap();
+                    for tag in &node.tags {
+                        tags_guard
+                            .entry(tag.clone())
+                            .or_insert_with(HashSet::new)
+                            .insert(node.id.clone());
+                    }
                 }
-                // Update tags
-                let mut tags_guard = tags.lock().unwrap();
-                for tag in &node.tags {
-                    tags_guard
-                        .entry(tag.clone())
-                        .or_insert_with(HashSet::new)
-                        .insert(node.id.clone());
+                Err(e) => {
+                    error!("Failed to parse file {}: {:#}", path.display(), e);
                 }
             }
         });

@@ -103,7 +103,6 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
     fetchNodes();
   }, [lastUpdated]);
 
-
   useEffect(() => {
     const map = nodes.reduce((acc, node) => {
       acc[node.id] = node
