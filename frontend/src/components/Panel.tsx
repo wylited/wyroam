@@ -2,8 +2,13 @@
 import { useEffect } from 'react';
 import { Node } from '@/lib/Node'
 import { useTabs } from '@/lib/TabContext'
-import renderMathInElement from 'katex/dist/contrib/auto-render';
+import dynamic from 'next/dynamic';
 import 'katex/dist/katex.min.css';
+
+const renderMathInElement = dynamic(
+  () => import('katex/dist/contrib/auto-render'),
+  { ssr: false }
+);
 
 interface PanelProps {
   node: Node | null;
@@ -31,12 +36,15 @@ export function Panel({ node }: PanelProps) {
   const processedHtml = node ? renderKaTeX(node.html) : '';
 
   useEffect(() => {
-    const handleLinkClick = (e: MouseEvent) => {
-      const target = e.target as HTMLAnchorElement;
+    const handleLinkClick = (e: Event) => {
+      // Cast the event to MouseEvent since we know it's a click event
+      const mouseEvent = e as MouseEvent;
+      // Cast the target to HTMLAnchorElement
+      const target = mouseEvent.target as HTMLAnchorElement;
       const href = target.getAttribute('href');
 
       if (href?.startsWith('id:')) {
-        e.preventDefault();
+        mouseEvent.preventDefault();
         const id = href.replace('id:', '');
         addTab(id);
       }
