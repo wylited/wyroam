@@ -4,6 +4,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { useNodes } from "@/lib/NodeContext"
 import { useTabs } from "@/lib/TabContext"
 import { Panel } from '@/components/Panel';
+import { Node } from '@/lib/Node';
 import * as React from "react"
 
 export function Panels() {
@@ -49,12 +50,17 @@ export function Panels() {
       cycleRightViewLeft,
       cycleRightViewRight])
 
-  const getPanelNodes = () => {
+  type PanelNodes = {
+    leftNode: Node | null;
+    rightNode: Node | null;
+  };
+
+  const getPanelNodes = (): PanelNodes => {
     return {
       leftNode: leftView ? nodes.find(node => node.id === leftView.id) || null : null,
       rightNode: rightView ? nodes.find(node => node.id === rightView.id) || null : null
-    }
-  }
+    };
+  };
 
   const { leftNode, rightNode } = getPanelNodes()
 
