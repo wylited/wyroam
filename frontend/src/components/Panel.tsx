@@ -2,13 +2,8 @@
 import { useEffect } from 'react';
 import { Node } from '@/lib/Node'
 import { useTabs } from '@/lib/TabContext'
-import dynamic from 'next/dynamic';
 import 'katex/dist/katex.min.css';
-
-const renderMathInElement = dynamic(
-  () => import('katex/dist/contrib/auto-render'),
-  { ssr: false }
-);
+import autoRender from 'katex/dist/contrib/auto-render.js';
 
 interface PanelProps {
   node: Node | null;
@@ -17,29 +12,24 @@ interface PanelProps {
 export function Panel({ node }: PanelProps) {
   const { addTab } = useTabs();
 
-  const renderKaTeX = (html: string): string => {
-    // Create a temporary div to render the math
-    const temp = document.createElement('div');
-    temp.innerHTML = html;
-
-    renderMathInElement(temp, {
-      delimiters: [
-        { left: '$$', right: '$$', display: true },
-        { left: '$', right: '$', display: false },
-      ],
-      throwOnError: false
-    });
-
-    return temp.innerHTML;
-  };
-
-  const processedHtml = node ? renderKaTeX(node.html) : '';
+  useEffect(() => {
+    if (node) {
+      const element = document.querySelector('.math-content');
+      if (element) {
+        autoRender(element, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+          ],
+          throwOnError: false
+        });
+      }
+    }
+  }, [node]);
 
   useEffect(() => {
     const handleLinkClick = (e: Event) => {
-      // Cast the event to MouseEvent since we know it's a click event
       const mouseEvent = e as MouseEvent;
-      // Cast the target to HTMLAnchorElement
       const target = mouseEvent.target as HTMLAnchorElement;
       const href = target.getAttribute('href');
 
@@ -65,7 +55,10 @@ export function Panel({ node }: PanelProps) {
   return (
     <div className="prose max-w-none">
       {node ? (
-        <div dangerouslySetInnerHTML={{ __html: processedHtml }} />
+        <div
+          className="math-content"
+          dangerouslySetInnerHTML={{ __html: node.html }}
+        />
       ) : (
         <p>Press ctrl+s to begin your exploration!</p>
       )}

@@ -10,7 +10,7 @@ use clap::Parser;
 use cli::Cli;
 use db::LiveDb;
 use router::router;
-use tracing::Level;
+use tracing::{info, Level};
 use tracing_subscriber::{EnvFilter, fmt::format::FmtSpan};
 
 #[tokio::main]
@@ -22,10 +22,13 @@ async fn main() -> Result<()> {
         tracing_subscriber::fmt()
             .with_env_filter(EnvFilter::from_default_env()
                 .add_directive(Level::INFO.into())
+
             )
             .with_span_events(FmtSpan::CLOSE)
             .init();
     }
+
+    info!("Backend Started");
 
     // Initialize LiveDB
     let live_db = LiveDb::new(cli.input.clone())
