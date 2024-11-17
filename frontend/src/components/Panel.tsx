@@ -7,14 +7,15 @@ import autoRender from 'katex/dist/contrib/auto-render.js';
 
 interface PanelProps {
   node: Node | null;
+  panelId: string; // Add unique identifier for each panel
 }
 
-export function Panel({ node }: PanelProps) {
+export function Panel({ node, panelId }: PanelProps) {
   const { addTab } = useTabs();
 
   useEffect(() => {
     if (node) {
-      const element = document.querySelector('.math-content');
+      const element = document.querySelector(`#math-content-${panelId}`);
       if (element) {
         autoRender(element, {
           delimiters: [
@@ -25,7 +26,7 @@ export function Panel({ node }: PanelProps) {
         });
       }
     }
-  }, [node]);
+  }, [node, panelId]);
 
   useEffect(() => {
     const handleLinkClick = (e: Event) => {
@@ -40,7 +41,7 @@ export function Panel({ node }: PanelProps) {
       }
     };
 
-    const links = document.querySelectorAll('.prose a');
+    const links = document.querySelectorAll(`#math-content-${panelId} a`);
     links.forEach(link => {
       link.addEventListener('click', handleLinkClick);
     });
@@ -50,12 +51,13 @@ export function Panel({ node }: PanelProps) {
         link.removeEventListener('click', handleLinkClick);
       });
     };
-  }, [node, addTab]);
+  }, [node, addTab, panelId]);
 
   return (
     <div className="prose max-w-none">
       {node ? (
         <div
+          id={`math-content-${panelId}`}
           className="math-content"
           dangerouslySetInnerHTML={{ __html: node.html }}
         />

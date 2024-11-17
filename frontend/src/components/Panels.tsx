@@ -72,7 +72,7 @@ export function Panels() {
       <ResizablePanel defaultSize={50}>
         <ScrollArea className="h-screen">
           <div className="p-6">
-            <Panel node={leftNode} />
+            <Panel node={leftNode} panelId="Left" />
           </div>
         </ScrollArea>
       </ResizablePanel>
@@ -80,7 +80,7 @@ export function Panels() {
       <ResizablePanel defaultSize={50}>
         <ScrollArea className="h-screen">
           <div className="p-6">
-            <Panel node={rightNode} />
+            <Panel node={rightNode} panelId="Right" />
           </div>
         </ScrollArea>
       </ResizablePanel>
