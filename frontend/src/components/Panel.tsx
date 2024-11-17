@@ -11,7 +11,7 @@ interface PanelProps {
 }
 
 export function Panel({ node, panelId }: PanelProps) {
-  const { addTab } = useTabs();
+  const { addTab, undoStack, rightView, leftView } = useTabs();
 
   useEffect(() => {
     if (node) {
@@ -26,7 +26,7 @@ export function Panel({ node, panelId }: PanelProps) {
         });
       }
     }
-  }, [node, panelId]);
+  }, [node, panelId, undoStack. rightView, leftView]);
 
   useEffect(() => {
     const handleLinkClick = (e: Event) => {

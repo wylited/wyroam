@@ -1,3 +1,5 @@
+// Simple node typing
+
 export interface Node {
   id: string;
   filename: string;

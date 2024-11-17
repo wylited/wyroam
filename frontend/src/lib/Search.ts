@@ -2,19 +2,22 @@ import { useNodes } from '@/lib/NodeContext'
 import { useState, useEffect, useMemo } from 'react'
 import { Node } from '@/lib/Node'
 
+// Levenshtein distance algorithm
 function levenshteinDistance(str1: string, str2: string): number {
   const m = str1.length
   const n = str2.length
+  // Create a 2D array to store the distances
   const dp: number[][] = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0))
 
+  // Initialize the first row and column
   for (let i = 0; i <= m; i++) dp[i][0] = i
   for (let j = 0; j <= n; j++) dp[0][j] = j
 
   for (let i = 1; i <= m; i++) {
     for (let j = 1; j <= n; j++) {
-      if (str1[i - 1] === str2[j - 1]) {
-        dp[i][j] = dp[i - 1][j - 1]
-      } else {
+      if (str1[i - 1] === str2[j - 1]) { // Characters match!
+        dp[i][j] = dp[i - 1][j - 1] // No operation needed
+      } else { // if they dont match then we need to perform an operation to determine the distance
         dp[i][j] = Math.min(
           dp[i - 1][j - 1], // substitution
           dp[i - 1][j],     // deletion
@@ -24,6 +27,7 @@ function levenshteinDistance(str1: string, str2: string): number {
     }
   }
 
+  // The bottom-right cell contains the distance
   return dp[m][n]
 }
 
@@ -72,8 +76,8 @@ export function NodeSearch() {
       searchString: [
         node.title,
         node.filename,
-        ...node.aliases,
-        ...node.tags,
+        ...node.aliases, // concatenates the vector of aliases
+        ...node.tags,    // likewise
         node.html.replace(/<[^>]*>/g, ' ') // Strip HTML tags
       ].join(' ')
     }))
@@ -93,7 +97,7 @@ export function NodeSearch() {
       .map(({ node }) => node)
 
     setSearchResults(results)
-  }, [searchQuery, nodeSearchData])
+  }, [searchQuery, nodeSearchData]) // Re-run the search when the query changes
 
   return {
     searchQuery,

@@ -5,11 +5,11 @@ use tower_http::{
     cors::{CorsLayer, Any}, // Add this import
 };
 use axum::{
-    response::{self, IntoResponse}, routing::{get}, Router
+    response::{self, IntoResponse}, routing::get, Router
 };
 use std::sync::Arc;
 
-use crate::{db::{Db}, graphql::{QueryRoot}};
+use crate::{db::Db, graphql::QueryRoot};
 use async_graphql::{http::GraphiQLSource, EmptyMutation, EmptySubscription, Schema};
 
 pub fn router(input: PathBuf, db: Arc<Mutex<Db>>) -> Router {
@@ -27,18 +27,19 @@ pub fn router(input: PathBuf, db: Arc<Mutex<Db>>) -> Router {
     Router::new()
         .route("/", get(root))
         .route("/graphql", get(graphiql).post_service(GraphQL::new(schema.clone())))
-        .nest_service(
+        .nest_service( // allowing downloading all the notes for debugging purposes
             "/notes",
             ServeDir::new(input),
         )
         .layer(cors) // Add the CORS middleware
 }
 
+// Serve test string at root
 async fn root() -> &'static str {
     "Wyroam Backend"
 }
 
-
+// Serve Graphql handler
 async fn graphiql() -> impl IntoResponse {
-    response::Html(GraphiQLSource::build().endpoint("/graphql").subscription_endpoint("/subscribe").finish())
+    response::Html(GraphiQLSource::build().endpoint("/graphql").finish())
 }

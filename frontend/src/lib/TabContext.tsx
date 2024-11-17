@@ -3,6 +3,7 @@
 
 import React, { createContext, useContext, useState } from 'react';
 
+// Linked list tab representation
 interface Tab {
   id: string
   prev: Tab | null
@@ -13,7 +14,7 @@ interface TabContextType {
   head: Tab | null
   leftView: Tab | null
   rightView: Tab | null
-  undoStack: string[]
+  undoStack: string[] // Undo stack as an array
   addTab: (id: string) => void
   pushTab: (id: string) => void
   removeTab: (id: string) => void

@@ -3,15 +3,12 @@ import { Button } from "@/components/ui/button";
 import { useNodes } from '@/lib/NodeContext';
 import { useTabs } from '@/lib/TabContext';
 import { useToast } from "@/hooks/use-toast";
-import { ToastAction } from "@/components/ui/toast"
 import { cn } from '@/lib/utils';
-import { UndoToast } from '@/components/Toast'
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function TabList() {
     const { getTabIds, removeTab, leftView, rightView, pushTab, undo } = useTabs()
     const { nodeMap } = useNodes();
-    const { toast } = useToast()
 
     const tabs = getTabIds()
 
@@ -30,18 +27,19 @@ export function TabList() {
                                 "hover:bg-accent hover:text-accent-foreground"
                             )}
                             onClick={(e) => {
-                                e.stopPropagation()
+                                e.stopPropagation() // prevent the event from bubbling up to the parent
                                 pushTab(tabId)
                              }}
                         >
                             <span className="rotate-180 text-sm px-2 py-1">{nodeMap[tabId].title}</span>
+                            {/* correctly rotate the text to be read vertically */}
                             <button
                                 className="absolute top-1 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground"
-                                onClick={(e) => {
-                                    e.stopPropagation()
+                                onClick={() => {
+                                    e.stopPropagation() // prevent the event from bubbling up to the parent
                                     removeTab(tabId)
                                 }}>
-                                ×
+                                × {/* Simple cancel icon */}
                             </button>
                         </Button>
                     ))}

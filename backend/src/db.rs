@@ -109,6 +109,7 @@ impl Db {
                     }
                 }
                 Err(e) => {
+                    // Log error
                     error!("Failed to parse file {}: {:#}", path.display(), e);
                 }
             }

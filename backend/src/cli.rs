@@ -6,7 +6,8 @@ use std::path::PathBuf;
 pub struct Cli {
     #[arg(short, long)]
     pub input: PathBuf,
-
+    // expect an input file directory
     #[arg(short, long)]
     pub log: bool,
+    // if the flag --log is present, then true.
 }

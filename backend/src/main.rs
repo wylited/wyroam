@@ -15,14 +15,14 @@ use tracing_subscriber::{EnvFilter, fmt::format::FmtSpan};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let cli = Cli::parse();
+    let cli = Cli::parse(); // parse in CLI options
 
     // Initialize logger only if --log flag is present
     if cli.log {
         tracing_subscriber::fmt()
             .with_env_filter(EnvFilter::from_default_env()
                 .add_directive(Level::INFO.into())
-
+                             // config to print out info statements
             )
             .with_span_events(FmtSpan::CLOSE)
             .init();
@@ -30,20 +30,20 @@ async fn main() -> Result<()> {
 
     info!("Backend Started");
 
-    // Initialize LiveDB
+    // Initialize our LiveDB
     let live_db = LiveDb::new(cli.input.clone())
         .map_err(|e| anyhow::anyhow!("db initialization failed: {}", e))?;
     let db = live_db.get_db();
 
-    // Try to host API
+    // Try to host API server on localhost:4000
     let listener = tokio::net::TcpListener::bind("localhost:4000").await
         .map_err(|e| anyhow::anyhow!("failed to bind listener: {}", e))?;
 
-    // Keep LiveDb alive
     let _live_db = live_db; // Move live_db into this variable to keep it alive
 
     axum::serve(listener, router(cli.input.clone(), db)).await
         .map_err(|e| anyhow::anyhow!("server error: {}", e))?;
+    // Server the axum server on the listener with the router
 
     Ok(())
 }

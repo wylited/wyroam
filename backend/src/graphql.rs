@@ -4,17 +4,19 @@ use std::time::SystemTime;
 use crate::db::Db;
 use crate::node::Node;
 
+// Node as a graphql object
 #[derive(SimpleObject, Clone)]
 pub struct NodeQL {
     id: String,
     filename: String,
     title: String,
-    aliases: Vec<String>,
-    tags: Vec<String>,
-    links: Vec<String>,
+    aliases: Vec<String>, // Have to replace the hashsets
+    tags: Vec<String>,    // with vectors for data transfer
+    links: Vec<String>,   // over graphql
     html: String,
 }
 
+// Node to NodeQL converter, simply
 impl From<Node> for NodeQL {
     fn from(node: Node) -> Self {
         NodeQL {
@@ -33,8 +35,10 @@ pub struct QueryRoot {
     pub db: Arc<Mutex<Db>>,
 }
 
+// QueryRoot object for graphql, each function is a possible query
 #[Object]
 impl QueryRoot {
+    // Get all node ids
     async fn all_node_ids(&self) -> Vec<String> {
         self.db.lock()
             .unwrap()
@@ -44,6 +48,7 @@ impl QueryRoot {
             .collect()
     }
 
+    // Get all nodes
     async fn all_nodes(&self) -> Vec<NodeQL> {
         self.db.lock()
             .unwrap()
@@ -54,6 +59,7 @@ impl QueryRoot {
             .collect()
     }
 
+    // Get a node by id
     async fn node(&self, id: String) -> Option<NodeQL> {
         self.db.lock()
             .unwrap()
@@ -63,6 +69,7 @@ impl QueryRoot {
             .map(NodeQL::from)
     }
 
+    // Get a node by alias
     async fn nodes_by_alias(&self, alias: String) -> Vec<NodeQL> {
         let db = self.db.lock().unwrap();
         db.aliases
@@ -77,6 +84,7 @@ impl QueryRoot {
             .unwrap_or_default()
     }
 
+    // Get a node by tag
     async fn nodes_by_tag(&self, tag: String) -> Vec<NodeQL> {
         let db = self.db.lock().unwrap();
         db.tags
@@ -91,6 +99,7 @@ impl QueryRoot {
             .unwrap_or_default()
     }
 
+    // Get the total count of nodes with a certain alias
     async fn alias_count(&self, alias: String) -> usize {
         self.db.lock()
             .unwrap()
@@ -100,6 +109,7 @@ impl QueryRoot {
             .unwrap_or(0)
     }
 
+    // Get the total count of nodes with a certain tag
     async fn tag_count(&self, tag: String) -> usize {
         self.db.lock()
             .unwrap()
@@ -109,6 +119,7 @@ impl QueryRoot {
             .unwrap_or(0)
     }
 
+    // Get the time since the last db update
     async fn last_updated(&self) -> String {
         self.db.lock()
             .unwrap()

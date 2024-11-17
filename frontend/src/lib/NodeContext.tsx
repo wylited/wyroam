@@ -3,12 +3,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Node } from '@/lib/Node'
 
+
 interface NodeContextType {
   nodes: Node[];
-  nodeMap: { [id: string]: Node };
-  loading: boolean;
-  error: Error | null;
-  refetch: () => Promise<void>;
+  nodeMap: { [id: string]: Node }; // So that nodes can be accessed faster
+  loading: boolean; // So that it doesn't process multiple requests while its still processing a request
+  error: Error | null; // So that we can display an error message
+  refetch: () => Promise<void>; // So that we can refetch the nodes with an external prompt
 }
 
 const NodeContext = createContext<NodeContextType | undefined>(undefined)
@@ -20,6 +21,7 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<Error | null>(null)
   const [lastUpdated, setLastUpdated] = useState<string>('0')
 
+  // Check if there are any updates through the query { lastUpdated }
   const checkUpdates = async () => {
     try {
       const response = await fetch('http://localhost:4000/graphql', {
@@ -53,6 +55,7 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // Fetch nodes and load them into the context
   const fetchNodes = async () => {
     try {
       const response = await fetch('http://localhost:4000/graphql', {
@@ -85,7 +88,7 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
       }
 
       setNodes(data.data.allNodes)
-      setLastUpdated(data.data.lastUpdated)
+      setLastUpdated(data.data.lastUpdated) // Update the last updated for the checkUpdates function
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch nodes'))
@@ -96,12 +99,11 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     fetchNodes();
-  }, []);
+  }, []); // on load, fetch the nodes
 
   useEffect(() => {
-    console.log(lastUpdated)
     fetchNodes();
-  }, [lastUpdated]);
+  }, [lastUpdated]); // in case lastUpdated ever changes, refetch all the nodes
 
   useEffect(() => {
     const map = nodes.reduce((acc, node) => {
@@ -110,12 +112,12 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
     }, {} as { [id: string]: Node })
 
     setNodeMap(map)
-  }, [nodes])
+  }, [nodes]) // If the nodes ever updates, repopulate the node map
 
   const refetch = async () => {
     setLoading(true)
     await fetchNodes()
-  }
+  } // Refetch the nodes with a loading state
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -123,7 +125,7 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
     }, 2000);
 
     return () => clearInterval(intervalId);
-  }, [lastUpdated]);
+  }, [lastUpdated]); // Check for updates every 2 seconds
 
   return (
     <NodeContext.Provider value={{

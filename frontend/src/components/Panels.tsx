@@ -36,7 +36,7 @@ export function Panels() {
         if (e.key === 'ArrowDown') {
           e.preventDefault()
           cycleRightViewLeft()
-        } else if (e.key === 'ArrowDown') {
+        } else if (e.key === 'ArrowUp') {
           e.preventDefault()
           cycleRightViewRight()
         }

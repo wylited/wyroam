@@ -31,7 +31,7 @@ export function CommandMenu() {
 
     React.useEffect(() => {
         const down = (e: KeyboardEvent) => {
-            if (e.key === "x" && (e.metaKey || e.ctrlKey)) {
+            if (e.key === "x" && (e.metaKey || e.ctrlKey)) { // ctrl + x or cmd + x
                 e.preventDefault()
                 toggleOpen()
             }
@@ -42,6 +42,7 @@ export function CommandMenu() {
     }, [])
 
     return (
+        // possible feature: clicking on the command does that command for you
         <div>
             <Button onClick={toggleOpen} variant="ghost">
                 <Terminal />
