@@ -35,8 +35,7 @@ async fn main() -> Result<()> {
         .map_err(|e| anyhow::anyhow!("db initialization failed: {}", e))?;
     let db = live_db.get_db();
 
-    // Try to host API server on localhost:4000
-    let listener = tokio::net::TcpListener::bind("localhost:39795").await
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:39795").await
         .map_err(|e| anyhow::anyhow!("failed to bind listener: {}", e))?;
 
     let _live_db = live_db; // Move live_db into this variable to keep it alive
