@@ -24,7 +24,7 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
   // Check if there are any updates through the query { lastUpdated }
   const checkUpdates = async () => {
     try {
-      const response = await fetch('http://localhost:4000/graphql', {
+      const response = await fetch('http://wyli.hackclub.app:6060/graphql', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ export function NodeProvider({ children }: { children: React.ReactNode }) {
   // Fetch nodes and load them into the context
   const fetchNodes = async () => {
     try {
-      const response = await fetch('http://localhost:4000/graphql', {
+      const response = await fetch('http://wyli.hackclub.app:6060/graphql', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
